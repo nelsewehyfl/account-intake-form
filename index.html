@@ -7,15 +7,12 @@
     body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
     label { display: block; margin-top: 10px; }
     input, textarea, button { width: 100%; padding: 8px; margin-top: 5px; }
+    #status { margin-top: 20px; font-weight: bold; }
   </style>
 </head>
 <body>
   <h2>Submit New Account</h2>
-
-  <form id="accountForm"
-        action="https://script.google.com/macros/s/AKfycbyoqdpEktgQw72mXXZdKlvQOauA7DnSA8R0KmAnBDv6WvEhWyqsiPYkFPkXFbi4IuTlNA/exec"
-        method="POST">
-
+  <form id="accountForm" enctype="multipart/form-data">
     <label>Account Name<input name="accountName" required></label>
     <label>Phone<input name="phone"></label>
 
@@ -32,7 +29,6 @@
     <label>Country<input name="billingCountry"></label>
 
     <label><input type="checkbox" id="sameAddress"> Shipping same as billing</label>
-
     <div id="shippingFields">
       <h3>Shipping Address</h3>
       <label>Street<textarea name="shippingStreet"></textarea></label>
@@ -42,8 +38,7 @@
       <label>Country<input name="shippingCountry"></label>
     </div>
 
-    <label>Upload Aircraft CSV<input type="file" id="csvFile" accept=".csv"></label>
-    <input type="hidden" name="csvContent" id="csvContent">
+    <label>Upload Aircraft CSV<input type="file" name="csvFile" accept=".csv"></label>
 
     <button type="submit">Submit</button>
     <div id="status"></div>
@@ -51,50 +46,38 @@
 
   <script>
     const form = document.getElementById('accountForm');
-    const fileInput = document.getElementById('csvFile');
-    const csvContentInput = document.getElementById('csvContent');
     const sameCheckbox = document.getElementById('sameAddress');
 
     sameCheckbox.addEventListener('change', () => {
-      const billing = {
-        street: form.billingStreet.value,
-        city: form.billingCity.value,
-        state: form.billingState.value,
-        postal: form.billingPostal.value,
-        country: form.billingCountry.value
-      };
-
       if (sameCheckbox.checked) {
-        form.shippingStreet.value = billing.street;
-        form.shippingCity.value = billing.city;
-        form.shippingState.value = billing.state;
-        form.shippingPostal.value = billing.postal;
-        form.shippingCountry.value = billing.country;
+        form.shippingStreet.value  = form.billingStreet.value;
+        form.shippingCity.value    = form.billingCity.value;
+        form.shippingState.value   = form.billingState.value;
+        form.shippingPostal.value  = form.billingPostal.value;
+        form.shippingCountry.value = form.billingCountry.value;
         document.getElementById('shippingFields').style.display = 'none';
       } else {
         document.getElementById('shippingFields').style.display = 'block';
       }
     });
 
-    fileInput.addEventListener('change', async () => {
-      const file = fileInput.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = btoa(reader.result);
-          csvContentInput.value = base64;
-        };
-        reader.readAsBinaryString(file);
-      }
-    });
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(form);
 
-    if (window.location.search.includes('success')) {
-      document.getElementById('status').innerText = '✅ Submitted!';
-    }
+      const res = await fetch(
+        'https://script.google.com/macros/s/AKfycbyoqdpEktgQw72mXXZdKlvQOauA7DnSA8R0KmAnBDv6WvEhWyqsiPYkFPkXFbi4IuTlNA/exec',
+        {
+          method: 'POST',
+          body: formData
+        }
+      );
+
+      const text = await res.text();
+      document.getElementById('status').innerText = text;
+    });
   </script>
 </body>
 </html>
-
-
 
 
