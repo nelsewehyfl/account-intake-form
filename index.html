@@ -11,12 +11,12 @@
 </head>
 <body>
   <h2>Submit New Account</h2>
-  
+
   <form id="accountForm"
         action="https://script.google.com/macros/s/AKfycbyoqdpEktgQw72mXXZdKlvQOauA7DnSA8R0KmAnBDv6WvEhWyqsiPYkFPkXFbi4IuTlNA/exec"
         method="POST"
         enctype="multipart/form-data">
-    
+
     <label>Account Name<input name="accountName" required></label>
     <label>Phone<input name="phone"></label>
 
@@ -47,27 +47,34 @@
   <script>
     const form = document.getElementById('accountForm');
     const sameCheckbox = document.getElementById('sameAddress');
-    const shippingFields = document.getElementById('shippingFields');
 
-    sameCheckbox.addEventListener('change', function () {
-      if (this.checked) {
-        // Copy billing fields to shipping and hide
-        form.shippingStreet.value = form.billingStreet.value;
-        form.shippingCity.value = form.billingCity.value;
-        form.shippingState.value = form.billingState.value;
-        form.shippingPostal.value = form.billingPostal.value;
-        form.shippingCountry.value = form.billingCountry.value;
-        shippingFields.style.display = 'none';
+    sameCheckbox.addEventListener('change', () => {
+      const billing = {
+        street: form.billingStreet.value,
+        city: form.billingCity.value,
+        state: form.billingState.value,
+        postal: form.billingPostal.value,
+        country: form.billingCountry.value
+      };
+
+      if (sameCheckbox.checked) {
+        form.shippingStreet.value = billing.street;
+        form.shippingCity.value = billing.city;
+        form.shippingState.value = billing.state;
+        form.shippingPostal.value = billing.postal;
+        form.shippingCountry.value = billing.country;
+        document.getElementById('shippingFields').style.display = 'none';
       } else {
-        shippingFields.style.display = 'block';
+        document.getElementById('shippingFields').style.display = 'block';
       }
     });
 
-    // Show confirmation after native submission (simple UI feedback)
+    // Optional success message handler (based on URL param)
     if (window.location.search.includes('success')) {
       document.getElementById('status').innerText = '✅ Submitted!';
     }
   </script>
 </body>
 </html>
+
 
