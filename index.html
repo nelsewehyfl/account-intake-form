@@ -11,7 +11,12 @@
 </head>
 <body>
   <h2>Submit New Account</h2>
-  <form id="accountForm">
+  
+  <form id="accountForm"
+        action="https://script.google.com/macros/s/AKfycbyoqdpEktgQw72mXXZdKlvQOauA7DnSA8R0KmAnBDv6WvEhWyqsiPYkFPkXFbi4IuTlNA/exec"
+        method="POST"
+        enctype="multipart/form-data">
+    
     <label>Account Name<input name="accountName" required></label>
     <label>Phone<input name="phone"></label>
 
@@ -39,36 +44,30 @@
     <div id="status"></div>
   </form>
 
-<script>
-  document.getElementById('accountForm').addEventListener('submit', async function (e) {
-    e.preventDefault(); // ⛔ Stop the form from actually submitting
+  <script>
+    const form = document.getElementById('accountForm');
+    const sameCheckbox = document.getElementById('sameAddress');
+    const shippingFields = document.getElementById('shippingFields');
 
-    const form = e.target;
-    const formData = new FormData(form);
+    sameCheckbox.addEventListener('change', function () {
+      if (this.checked) {
+        // Copy billing fields to shipping and hide
+        form.shippingStreet.value = form.billingStreet.value;
+        form.shippingCity.value = form.billingCity.value;
+        form.shippingState.value = form.billingState.value;
+        form.shippingPostal.value = form.billingPostal.value;
+        form.shippingCountry.value = form.billingCountry.value;
+        shippingFields.style.display = 'none';
+      } else {
+        shippingFields.style.display = 'block';
+      }
+    });
 
-    if (document.getElementById('sameAddress').checked) {
-      formData.set('shippingStreet', form.billingStreet.value);
-      formData.set('shippingCity', form.billingCity.value);
-      formData.set('shippingState', form.billingState.value);
-      formData.set('shippingPostal', form.billingPostal.value);
-      formData.set('shippingCountry', form.billingCountry.value);
+    // Show confirmation after native submission (simple UI feedback)
+    if (window.location.search.includes('success')) {
+      document.getElementById('status').innerText = '✅ Submitted!';
     }
-
-    document.getElementById('status').innerText = 'Submitting...';
-
-    try {
-      const res = await fetch('https://script.google.com/macros/s/AKfycbyoqdpEktgQw72mXXZdKlvQOauA7DnSA8R0KmAnBDv6WvEhWyqsiPYkFPkXFbi4IuTlNA/exec', {
-        method: 'POST',
-        body: formData
-      });
-
-      const text = await res.text();
-      document.getElementById('status').innerHTML = '✅ Submitted!<br>' + text;
-      form.reset();
-    } catch (err) {
-      document.getElementById('status').innerText = '❌ Submission failed: ' + err;
-    }
-  });
-</script>
+  </script>
 </body>
 </html>
+
