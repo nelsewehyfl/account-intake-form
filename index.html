@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Account Intake Form</title>
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
+    label { display: block; margin-top: 10px; }
+    input, textarea, button { width: 100%; padding: 8px; margin-top: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Submit New Account</h2>
+  <form id="accountForm">
+    <label>Account Name<input name="accountName" required></label>
+    <label>Phone<input name="phone"></label>
+
+    <h3>Billing Address</h3>
+    <label>Street<textarea name="billingStreet"></textarea></label>
+    <label>City<input name="billingCity"></label>
+    <label>State<input name="billingState"></label>
+    <label>Postal Code<input name="billingPostal"></label>
+    <label>Country<input name="billingCountry"></label>
+
+    <label><input type="checkbox" id="sameAddress"> Shipping same as billing</label>
+
+    <div id="shippingFields">
+      <h3>Shipping Address</h3>
+      <label>Street<textarea name="shippingStreet"></textarea></label>
+      <label>City<input name="shippingCity"></label>
+      <label>State<input name="shippingState"></label>
+      <label>Postal Code<input name="shippingPostal"></label>
+      <label>Country<input name="shippingCountry"></label>
+    </div>
+
+    <label>Upload CSV<input type="file" name="csvFile" accept=".csv" required></label>
+
+    <button type="submit">Submit</button>
+    <div id="status"></div>
+  </form>
+
+  <script>
+    document.getElementById('sameAddress').addEventListener('change', function () {
+      document.getElementById('shippingFields').style.display = this.checked ? 'none' : 'block';
+    });
+
+    document.getElementById('accountForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const form = e.target;
+      const formData = new FormData(form);
+      if (document.getElementById('sameAddress').checked) {
+        formData.set('shippingStreet', form.billingStreet.value);
+        formData.set('shippingCity', form.billingCity.value);
+        formData.set('shippingState', form.billingState.value);
+        formData.set('shippingPostal', form.billingPostal.value);
+        formData.set('shippingCountry', form.billingCountry.value);
+      }
+
+      document.getElementById('status').innerText = 'Submitting...';
+
+      try {
+        const res = await fetch('YOUR_WEB_APP_URL', {
+          method: 'POST',
+          body: formData
+        });
+        const text = await res.text();
+        document.getElementById('status').innerText = '✅ Submitted! ' + text;
+        form.reset();
+      } catch (err) {
+        document.getElementById('status').innerText = '❌ Submission failed: ' + err;
+      }
+    });
+  </script>
+</body>
+</html>
