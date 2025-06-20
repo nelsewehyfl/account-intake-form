@@ -39,6 +39,8 @@
     </div>
 
     <label>Upload Aircraft CSV<input type="file" name="csvFile" accept=".csv"></label>
+    <!-- Hidden field for base64 CSV -->
+    <input type="hidden" name="csvBase64" id="csvBase64">
 
     <button type="submit">Submit</button>
     <div id="status"></div>
@@ -47,6 +49,8 @@
   <script>
     const form = document.getElementById('accountForm');
     const sameCheckbox = document.getElementById('sameAddress');
+    const fileInput = form.querySelector('input[type="file"][name="csvFile"]');
+    const csvBase64Input = document.getElementById('csvBase64');
 
     sameCheckbox.addEventListener('change', () => {
       if (sameCheckbox.checked) {
@@ -61,10 +65,29 @@
       }
     });
 
+    // Read file as base64 and set hidden field before submit
+    fileInput.addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          // Convert binary string to base64
+          csvBase64Input.value = btoa(evt.target.result);
+        };
+        reader.readAsBinaryString(file);
+      } else {
+        csvBase64Input.value = '';
+      }
+    });
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
+      // Ensure base64 is set if file is selected
+      if (fileInput.files[0] && !csvBase64Input.value) {
+        document.getElementById('status').innerText = 'File is still loading, please wait a moment and submit again.';
+        return;
+      }
       const formData = new FormData(form);
-
       const res = await fetch(
         'https://script.google.com/macros/s/AKfycbyoqdpEktgQw72mXXZdKlvQOauA7DnSA8R0KmAnBDv6WvEhWyqsiPYkFPkXFbi4IuTlNA/exec',
         {
@@ -72,12 +95,12 @@
           body: formData
         }
       );
-
       const text = await res.text();
       document.getElementById('status').innerText = text;
     });
   </script>
 </body>
 </html>
+
 
 
