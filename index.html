@@ -8,6 +8,8 @@
     label { display: block; margin-top: 10px; }
     input, textarea, button { width: 100%; padding: 8px; margin-top: 5px; }
     #status { margin-top: 20px; font-weight: bold; }
+    .thanks { color: green; font-size: 1.5em; text-align: center; }
+    .error { color: red; }
   </style>
 </head>
 <body>
@@ -39,18 +41,21 @@
     </div>
 
     <label>Upload Aircraft CSV<input type="file" name="csvFile" accept=".csv"></label>
-    <!-- Hidden field for base64 CSV -->
     <input type="hidden" name="csvBase64" id="csvBase64">
 
     <button type="submit">Submit</button>
     <div id="status"></div>
   </form>
 
+  <div id="thankYou" class="thanks" style="display:none;">Thank you for your submission!</div>
+
   <script>
     const form = document.getElementById('accountForm');
     const sameCheckbox = document.getElementById('sameAddress');
     const fileInput = form.querySelector('input[type="file"][name="csvFile"]');
     const csvBase64Input = document.getElementById('csvBase64');
+    const statusDiv = document.getElementById('status');
+    const thankYouDiv = document.getElementById('thankYou');
 
     sameCheckbox.addEventListener('change', () => {
       if (sameCheckbox.checked) {
@@ -84,10 +89,13 @@
       e.preventDefault();
       // Ensure base64 is set if file is selected
       if (fileInput.files[0] && !csvBase64Input.value) {
-        document.getElementById('status').innerText = 'File is still loading, please wait a moment and submit again.';
+        statusDiv.innerText = 'File is still loading, please wait a moment and submit again.';
+        statusDiv.className = "error";
         return;
       }
       const formData = new FormData(form);
+      statusDiv.innerText = "Submitting...";
+      statusDiv.className = "";
       const res = await fetch(
         'https://script.google.com/macros/s/AKfycbyoqdpEktgQw72mXXZdKlvQOauA7DnSA8R0KmAnBDv6WvEhWyqsiPYkFPkXFbi4IuTlNA/exec',
         {
@@ -96,11 +104,19 @@
         }
       );
       const text = await res.text();
-      document.getElementById('status').innerText = text;
+      if (text.startsWith('✅')) {
+        form.style.display = 'none';
+        statusDiv.style.display = 'none';
+        thankYouDiv.style.display = 'block';
+      } else {
+        statusDiv.innerText = text;
+        statusDiv.className = "error";
+      }
     });
   </script>
 </body>
 </html>
+
 
 
 
