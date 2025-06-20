@@ -104,14 +104,15 @@
         }
       );
       const text = await res.text();
-      if (text.startsWith('✅')) {
-        form.style.display = 'none';
-        statusDiv.style.display = 'none';
-        thankYouDiv.style.display = 'block';
-      } else {
-        statusDiv.innerText = text;
-        statusDiv.className = "error";
-      }
+ if (text.trim().startsWith('✅')) {
+  form.style.display = 'none';
+  statusDiv.style.display = 'none';
+  thankYouDiv.style.display = 'block';
+} else {
+  statusDiv.innerText = text;
+  statusDiv.className = "error";
+}
+
     });
   </script>
 </body>
