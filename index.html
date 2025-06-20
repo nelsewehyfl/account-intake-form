@@ -20,6 +20,11 @@
     <label>Account Name<input name="accountName" required></label>
     <label>Phone<input name="phone"></label>
 
+    <h3>Main Contact Info</h3>
+    <label>First Name<input name="contactFirstName" required></label>
+    <label>Last Name<input name="contactLastName" required></label>
+    <label>Email<input name="contactEmail" type="email" required></label>
+
     <h3>Billing Address</h3>
     <label>Street<textarea name="billingStreet"></textarea></label>
     <label>City<input name="billingCity"></label>
@@ -69,7 +74,6 @@
       }
     });
 
-    // Optional success message handler (based on URL param)
     if (window.location.search.includes('success')) {
       document.getElementById('status').innerText = '✅ Submitted!';
     }
