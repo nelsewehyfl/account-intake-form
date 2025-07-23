@@ -23,7 +23,7 @@
       padding: 36px 34px 28px 34px;
       max-width: 430px;
       width: 100%;
-      margin: 100px auto 40px auto; /* Top margin to push below fixed header */
+      margin: 100px auto 40px auto;
       position: relative;
       color: #1a2639;
     }
@@ -146,7 +146,7 @@
       .form-container, #thankYou {
         padding: 15px 2vw 19px 2vw;
         max-width: 98vw;
-        margin-top: 80px; /* Less top margin on mobile */
+        margin-top: 80px;
       }
     }
   </style>
@@ -182,6 +182,9 @@
 
       <label>Upload Aircraft CSV<input type="file" name="csvFile" accept=".csv"></label>
       <input type="hidden" name="csvBase64" id="csvBase64">
+
+      <!-- Secure Secret Token (MUST match backend) -->
+      <input type="hidden" name="secret" value="MyUltraSecureSecret123!">
 
       <button type="submit">Submit</button>
       <div id="status"></div>
@@ -262,5 +265,6 @@
   </script>
 </body>
 </html>
+
 
 
