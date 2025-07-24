@@ -156,7 +156,7 @@
     <h2>Submit New Account</h2>
     <form id="accountForm" enctype="multipart/form-data" autocomplete="off">
       <label>Customer Name<input name="accountName" required></label>
-      <label>Phone<input name="phone"></label>
+<label>Phone<input name="phone" type="tel" pattern="[0-9\-+() ]{7,}" maxlength="20" required></label>
 
       <h3>Main Contact Info</h3>
       <label>First Name<input name="contactFirstName" required></label>
